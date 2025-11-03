@@ -28,7 +28,6 @@ while True:
     if change_door.lower() not in valid_choices:
         print(f"You must enter 'y' or 'n', but you entered '{change_door}'. Please try again.")
         continue
-
     break
 
 if change_door.lower() == 'y':
