@@ -1,12 +1,7 @@
+from config import FILENAME, BASE_PATH, DEFAULT_USER_NAME
 from helpers import files_helpers, debts_helpers
 
-MAX_DEBTS = 50
-FILENAME = "debt_records.csv"
-BASE_PATH = "."
-
-# If the user decide to not enter a name, then '二百五' will be their name.
-DEFAULT_USER_NAME = "二百五"
-
+debts: list[dict] = []
 old_user = files_helpers.file_exists(FILENAME, BASE_PATH)
 
 if not old_user:
@@ -21,5 +16,4 @@ if not old_user:
     if user_name.strip() == "":
         user_name = DEFAULT_USER_NAME
 
-    debts = debts_helpers.get_debts(MAX_DEBTS, user_name)
-    print(debts)
+    debts = debts_helpers.get_debts(user_name, debts)
