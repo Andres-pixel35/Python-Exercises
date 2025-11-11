@@ -1,2 +1,3 @@
-user_name, debt_name, start_date, end_date, monthly_payment, total_amount, remaining_amount, interest_rate
+user_name, debt_name, start_date, deadline, monthly_payment, total_amount, remaining_amount, interest_rate
+
 
