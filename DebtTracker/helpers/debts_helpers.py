@@ -3,7 +3,7 @@
 from config import MAX_DEBTS #type: ignore
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from helpers.generalities import get_interest_rate #type: ignore
+from helpers.generalities import get_interest_rate, get_remaining_amount #type: ignore
 
 # it allows the user to enter their debts and it creates a list of dictionaries, the user can enter up to MAX_DEBTS debts.
 # some information is automatically fill up since there is no need for the user to manually enter that kind of information.
@@ -45,6 +45,8 @@ def get_debts(user_name: str, debts: list) -> list:
                 print("You must enter a positive integer or float greater than zero (0), but you did not. Please try again.\n")
 
         interest_rate = get_interest_rate(payment_monthly, total_amount, payments)
+
+        remaining_amount = get_remaining_amount(payment_monthly, total_amount, payments, start_date)
         
         next_debt = input("Do you want to add another debt? (y/n): ")
         if next_debt.lower() in valid_options:
@@ -59,5 +61,3 @@ def get_debts(user_name: str, debts: list) -> list:
             break
 
     return debts
-
-
