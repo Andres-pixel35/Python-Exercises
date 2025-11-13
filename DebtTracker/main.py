@@ -1,5 +1,5 @@
 from config import FILENAME, BASE_PATH, DEFAULT_USER_NAME
-from helpers import files_helpers, debts_helpers
+from helpers import files_helpers, user_input
 
 debts: list[dict] = []
 old_user = files_helpers.file_exists(FILENAME, BASE_PATH)
@@ -16,4 +16,4 @@ if not old_user:
     if user_name.strip() == "":
         user_name = DEFAULT_USER_NAME
 
-    debts = debts_helpers.get_debts(user_name, debts)
+    debts = user_input.get_debts(user_name, debts)
