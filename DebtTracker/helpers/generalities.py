@@ -8,3 +8,19 @@ def calculate_months(start_date: date) -> int:
         months = months - 1
 
     return months
+
+def check_name_debt(debt_name: str, debts: list) -> bool:
+    for dictionary in debts:
+        if dictionary["debt_name"] == debt_name.lower():
+            return False
+
+    return True
+
+def create_list_dict(keys: list, values: list, debts: list) -> list:
+    temp_dict = {keys[i]: values[i] for i in range (len(keys))}
+
+    debts.append(temp_dict)
+
+    return debts
+
+
