@@ -9,4 +9,4 @@ BASE_PATH = "."
 # If the user decide to not enter a name, then '二百五' will be their name.
 DEFAULT_USER_NAME = "二百五"
 
-FIELDNAMES = ["user_name", "debt_name", "start_date", "deadline", "monthly_payment", "total_amount", "remaining_amount", "interest_rate"]
+FIELDNAMES = ["user_name", "debt_name", "start_date", "deadline", "monthly_payment", "instalments", "total_amount", "remaining_amount", "interest_rate"]

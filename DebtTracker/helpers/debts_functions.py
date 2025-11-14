@@ -8,7 +8,7 @@ from helpers.generalities import calculate_months
 def get_interest_rate(monthly_payment: float, total_amount: float, instalments: int) -> float:
     rate = npf.rate(instalments, -monthly_payment, total_amount, 0)
     rate = float(rate)
-    return rate
+    return round(rate * 100, 2)
 
 # it will make sure that the data entered is likely to be a real debt and that the user did not make any huge mistake entering the data
 def check_debt(monthly_payment: float, total_amount: float, instalments: int, start_date: date) -> bool:
@@ -36,7 +36,6 @@ def check_debt(monthly_payment: float, total_amount: float, instalments: int, st
         return False
 
     return True
-
 
 # it calculates the remaining amount of the debt each time the program is execute.
 # this is thanks to take the current date and compare it with the start_date
