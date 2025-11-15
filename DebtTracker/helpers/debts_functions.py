@@ -1,6 +1,6 @@
 import numpy_financial as npf
 from datetime import date
-import helpers.user_input
+import helpers.user_input as hu
 from helpers.generalities import calculate_months
 
 
@@ -23,14 +23,14 @@ def check_debt(monthly_payment: float, total_amount: float, instalments: int, st
     if ratio < 0.9:
         print("The total of instalments is too low to cover the debt — data may be incorrect.\n"
             "If you are sure of the data, you may continue. Are you sure? ", end="")
-        choice = helpers.user_input.get_choice()
+        choice = hu.get_choice()
         if choice == 'y':
             return True
         return False
     elif ratio > 1.6:
         print("The total of instalments is much higher than the debt — This might be due to interest rate.\n"
               "If you know that you have a high interest rate per month, you may continue. Are you sure? ", end="")
-        choice = helpers.user_input.get_choice()
+        choice = hu.get_choice()
         if choice == 'y':
             return True
         return False

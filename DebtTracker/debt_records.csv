@@ -1,0 +1,2 @@
+user_name,debt_name,start_date,deadline,monthly_payment,instalments,total_amount,remaining_amount,interest_rate
+andres,house,2025-11-10,2026-09-10,1250.0,10,10000.0,11250.0,4.28

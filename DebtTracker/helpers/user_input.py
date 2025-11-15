@@ -74,3 +74,22 @@ def get_debts(user_name: str, debts: list) -> list:
         print("Closing.")
         break
     return debts
+
+def get_choice_2(options: list,) -> int:
+    length = len(options)
+    tmp_list = list(range(1, length + 1))
+
+    while True:
+        for i in range(length):
+            print(f"{i + 1}: {options[i]}")
+
+        try:
+            choice = int(input("Please enter the number of your choice: "))
+
+            if choice not in tmp_list:
+                raise ValueError
+
+            return choice
+        except ValueError:
+            print(f"You must choose a number betwen 1 and {length}. Please try again.\n")
+            continue
