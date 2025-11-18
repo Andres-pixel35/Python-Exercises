@@ -58,8 +58,8 @@ def get_debts(user_name: str, debts: list) -> list:
 
         remaining_amount = get_remaining_amount(payment_monthly, instalments, start_date)
 
-        start_date = start_date.strftime("%Y-%m-%d")
-        deadline = deadline.strftime("%Y-%m-%d")
+        start_date = start_date.strftime("%Y/%m/%d")
+        deadline = deadline.strftime("%Y/%m/%d")
 
         temp_list = [user_name, debt_name, start_date, deadline, payment_monthly, instalments, total_amount, remaining_amount, interest_rate]
 

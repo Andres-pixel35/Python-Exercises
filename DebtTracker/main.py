@@ -1,5 +1,5 @@
 from config import FILENAME, BASE_PATH, DEFAULT_USER_NAME, FIELDNAMES
-from helpers import files_helpers, user_input
+from helpers import files_helpers, user_input, debts_functions
 
 def main():
     debts: list[dict] = []
@@ -33,7 +33,21 @@ def main():
                 return 0
 
     if old_user:
-        print("sayonara")
+        debts = files_helpers.read_csv(FILENAME)
+        user_name = debts[0]["user_name"]
+        debts = debts_functions.update_debt(debts)
+        
+        if len(debts) == 0:
+            print(f"Congratulations, {user_name.title()}. You have paid off all your previous debts.\n\n"
+                  "Do you want to add a new one? ", end="")
+            choice = user_input.get_choice()
+            if choice == 'y':
+                debts = user_input.get_debts(user_name, debts)
+            else:
+                print("Closing.")
+                return 0
+        print(debts)
+
 
 if __name__ == "__main__":
     main()

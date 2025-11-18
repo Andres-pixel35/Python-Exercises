@@ -1,5 +1,5 @@
 import numpy_financial as npf
-from datetime import date
+from datetime import date, datetime
 import helpers.user_input as hu
 from helpers.generalities import calculate_months
 
@@ -51,11 +51,28 @@ def get_remaining_amount(monthly_payment: float, instalments: int, start_date: d
     elif current_date < start_date:
         return real_total_amount
 
-    months = calculate_months(start_date)
+    months = calculate_months(start_date) 
 
     debt_paid_by_now = monthly_payment * months
 
-    remaining_amount = real_total_amount - debt_paid_by_now
+    new_remaining_amount = real_total_amount - debt_paid_by_now
 
-    return remaining_amount
+    return new_remaining_amount
+
+def update_debt(debts: list) -> list:
+    for debt in debts:
+        start_date = datetime.strptime(debt["start_date"], "%Y/%m/%d").date()
+        monthly_payment = float(debt["monthly_payment"])
+        instalments = int(debt["instalments"])
+
+        remaining_amount = get_remaining_amount(monthly_payment, instalments, start_date)
+
+        if remaining_amount <= 0:
+            name = debt["debt_name"]
+            print(f"Congratulations for paying off your debt {name.title()}\n")
+            debts.remove(debt)
+
+        debt["remaining_amount"] = remaining_amount
+
+    return debts
 

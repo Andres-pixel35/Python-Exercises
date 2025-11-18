@@ -1,5 +1,3 @@
-# Here will been all the functions related to the use and manipulation of files, like read and write.
-
 import os
 import csv
 
@@ -20,4 +18,14 @@ def update_csv(fieldnames: list, debts: list, filename: str, old_user: bool):
 
         for debt in debts:
             writer.writerow(debt)
+
+def read_csv(filename: str) -> list:
+    with open(filename, mode="r", encoding="utf-8") as file:
+        tmp_list = []
+        csv_reader = csv.DictReader(file)
+
+        for debt in csv_reader:
+            tmp_list.append(debt)
+
+        return tmp_list
 
