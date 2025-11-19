@@ -60,6 +60,7 @@ def get_remaining_amount(monthly_payment: float, instalments: int, start_date: d
     return new_remaining_amount
 
 def update_debt(debts: list) -> list:
+    updated_list = []
     for debt in debts:
         start_date = datetime.strptime(debt["start_date"], "%Y/%m/%d").date()
         monthly_payment = float(debt["monthly_payment"])
@@ -67,12 +68,12 @@ def update_debt(debts: list) -> list:
 
         remaining_amount = get_remaining_amount(monthly_payment, instalments, start_date)
 
-        if remaining_amount <= 0:
+        if remaining_amount > 0:
+            debt["remaining_amount"] = remaining_amount
+            updated_list.append(debt)
+        else:
             name = debt["debt_name"]
             print(f"Congratulations for paying off your debt {name.title()}\n")
-            debts.remove(debt)
 
-        debt["remaining_amount"] = remaining_amount
-
-    return debts
+    return updated_list
 

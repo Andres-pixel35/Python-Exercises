@@ -16,7 +16,7 @@ def get_choice() -> str:
 # it allows the user to enter their debts and it creates a list of dictionaries, the user can enter up to MAX_DEBTS debts.
 # some information is automatically fill up since there is no need for the user to manually enter that kind of information.    
 def get_debts(user_name: str, debts: list) -> list:
-    print(f"Now, please enter the following information related to your debts.\nRemeber that you can only enter up to {MAX_DEBTS} different debts.\n")
+    print(f"\nPlease enter the following information related to your debts.\nRemeber that you can only enter up to {MAX_DEBTS} different debts.\n")
 
     while True:
         number_debts = len(debts)
@@ -93,3 +93,17 @@ def get_choice_2(options: list,) -> int:
         except ValueError:
             print(f"You must choose a number betwen 1 and {length}. Please try again.\n")
             continue
+
+def ask_debt_name_for_interest(debts: list):
+    debts_names = [debt["debt_name"].title() for debt in debts]
+
+    print("\nPlease choose the debt whose interest rate you want to know ")
+
+    choice = get_choice_2(debts_names)
+
+    interest_rate = 0
+    for debt in debts:
+        if debt["debt_name"] == debts_names[choice - 1].lower():
+            interest_rate = debt["interest_rate"]
+
+    print(f"\nThe interes rate of {debts_names[choice - 1]} is {interest_rate}%")
