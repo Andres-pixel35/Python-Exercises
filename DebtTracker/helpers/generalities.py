@@ -26,4 +26,9 @@ def create_list_dict(keys: list, values: list, debts: list) -> list:
 
     return debts
 
+def show_interest_rate(debts: list):
+    print("\nDebt name: insterest rate")
+    for debt in debts:
+        print(f"{debt["debt_name"].title()}: {debt["interest_rate"]}%")
+
 
