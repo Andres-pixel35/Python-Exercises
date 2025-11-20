@@ -40,7 +40,7 @@ def check_debt(monthly_payment: float, total_amount: float, instalments: int, st
 # it calculates the remaining amount of the debt each time the program is execute.
 # this is thanks to take the current date and compare it with the start_date
 def get_remaining_amount(monthly_payment: float, instalments: int, start_date: date) -> float:
-    current_date = date.today()
+    current_date = date.today() 
     real_total_amount = monthly_payment * instalments
 
     if (start_date.year, start_date.month) == (current_date.year, current_date.month):
