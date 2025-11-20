@@ -24,7 +24,7 @@ def get_debts(user_name: str, debts: list) -> list:
             print("You have reached the maximum amount of debts you can record.\n\nClosing")
             return debts
 
-        debt_name = input(f"Please enter the name of your debt number {number_debts + 1}: ")
+        debt_name = input(f"Please enter the name of your debt number {number_debts + 1}: ").lower()
 
         if debt_name.strip() == "":
             print("You must enter a name for each one of your debts. Please try again.\n")
@@ -71,7 +71,6 @@ def get_debts(user_name: str, debts: list) -> list:
             print("")
             continue
 
-        print("Closing.")
         break
     return debts
 

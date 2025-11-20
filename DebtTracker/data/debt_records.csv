@@ -1,3 +1,3 @@
 user_name,debt_name,start_date,deadline,monthly_payment,instalments,total_amount,remaining_amount,interest_rate
 andres,house,2025/11/10,2026/09/10,1250.0,10,10000.0,11250.0,4.28
-andres,bike,2025/12/10,2026/10/10,1500.0,10,12500.0,15000.0,3.46
+andres,bioke,2025/12/10,2026/10/10,1500.0,10,12500.0,15000.0,3.46
