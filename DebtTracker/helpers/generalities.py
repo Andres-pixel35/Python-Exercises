@@ -19,12 +19,12 @@ def check_name_debt(debt_name: str, debts: list) -> bool:
 
     return True
 
-def create_list_dict(keys: list, values: list, debts: list) -> list:
+def create_list_dict(keys: list, values: list, debts: list) -> dict:
     temp_dict = {keys[i]: values[i] for i in range (len(keys))}
 
     debts.append(temp_dict)
 
-    return debts
+    return temp_dict
 
 def show_interest_rate(debts: list):
     print("\nDebt name: insterest rate")
