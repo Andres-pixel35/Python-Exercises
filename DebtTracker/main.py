@@ -1,4 +1,4 @@
-from config import DEFAULT_USER_NAME, OPTIONS_OLD_USER, OPTIONS_NEW_USER, OPTIONS_INTEREST_RATE
+from config import OPTIONS_OLD_USER, OPTIONS_NEW_USER, OPTIONS_INTEREST_RATE
 from helpers import files_helpers, user_input, debts_functions, generalities
 
 def main():
@@ -12,14 +12,11 @@ def main():
             " your information will be automatically updated each time you run this programme.\n"
         )
 
-        user_name = input(f"Please enter your name (default '{DEFAULT_USER_NAME}'): ").lower()
+        user_name = user_input.ask_users_name()
 
-        if user_name.strip() == "":
-            user_name = DEFAULT_USER_NAME
+        debts = user_input.get_debts(user_name, debts, old_user)
 
-        debts = user_input.get_debts(user_name, debts)
-
-        files_helpers.update_csv(debts)
+        files_helpers.update_records(debts)
 
         print("All your debts have been recorded successfully.\n\nWhat do you want to do now?")
 
@@ -33,8 +30,19 @@ def main():
                 return 0
 
     if old_user:
-        debts = files_helpers.read_csv()
-        user_name = debts[0]["user_name"]
+        user_name = ""
+        debts = files_helpers.read_records()
+
+        if debts and debts[0].get("user_name"):
+            user_name = debts[0]["user_name"] 
+        else:
+            try:
+                user_name = files_helpers.read_history()
+            except FileNotFoundError:
+                print("We beg your pardon, due to an error we cannot longer recall your name.")
+                user_name = user_input.ask_users_name()
+                old_user = False
+
         print(f"Welcome back, {user_name.title()}.")
 
         debts = debts_functions.update_debt(debts)
@@ -44,9 +52,9 @@ def main():
                   "Do you want to add a new one? ", end="")
             choice = user_input.get_choice()
             if choice == 'y':
-                debts = user_input.get_debts(user_name, debts)
+                debts = user_input.get_debts(user_name, debts, old_user)
             else:
-                files_helpers.update_csv(debts)
+                files_helpers.update_records(debts)
                 print("Closing.")
                 return 0
 
@@ -55,12 +63,12 @@ def main():
             choice = user_input.get_choice_2(OPTIONS_OLD_USER)
             match choice:
                 case 1:
-                    debts = user_input.get_debts(user_name, debts)
+                    debts = user_input.get_debts(user_name, debts, old_user)
 
                     print("\nDo you want to continue? ", end="")
                     choice = user_input.get_choice()
                     if choice == 'n':
-                        files_helpers.update_csv(debts)
+                        files_helpers.update_records(debts)
                         print("Thank you for using my program.\nClosing.")
                         break
                     continue
@@ -75,7 +83,7 @@ def main():
                             print("\nDo you want to do something else? ", end="")
                             choice = user_input.get_choice()
                             if choice == 'n':
-                                files_helpers.update_csv(debts)
+                                files_helpers.update_records(debts)
                                 print("Thank you for using my program.\nClosing.")
                                 break
                             continue
@@ -86,7 +94,7 @@ def main():
                             print("\nDo you want to do something else? ", end="")
                             choice = user_input.get_choice()
                             if choice == 'n':
-                                files_helpers.update_csv(debts)
+                                files_helpers.update_records(debts)
                                 print("Thank you for using my program.\nClosing.")
                                 break
                             continue

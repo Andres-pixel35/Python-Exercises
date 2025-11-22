@@ -1,8 +1,9 @@
-from config import MAX_DEBTS, FIELDNAMES 
+from config import MAX_DEBTS, FIELDNAMES, DEFAULT_USER_NAME
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from helpers.debts_functions import get_interest_rate, get_remaining_amount, check_debt 
 from helpers.generalities import create_list_dict, check_name_debt
+from helpers.files_helpers import write_history
 
 # to check out that when the user is asked to enter 'y/n', they actually do that
 def get_choice() -> str:
@@ -15,8 +16,9 @@ def get_choice() -> str:
 
 # it allows the user to enter their debts and it creates a list of dictionaries, the user can enter up to MAX_DEBTS debts.
 # some information is automatically fill up since there is no need for the user to manually enter that kind of information.    
-def get_debts(user_name: str, debts: list) -> list:
+def get_debts(user_name: str, debts: list, old_user: bool) -> list:
     print(f"\nPlease enter the following information related to your debts.\nRemeber that you can only enter up to {MAX_DEBTS} different debts.\n")
+    new_debts = []
 
     while True:
         number_debts = len(debts)
@@ -63,14 +65,16 @@ def get_debts(user_name: str, debts: list) -> list:
 
         temp_list = [user_name, debt_name, start_date, deadline, payment_monthly, instalments, total_amount, remaining_amount, interest_rate]
 
-        debts = create_list_dict(FIELDNAMES, temp_list, debts)
+        new_debt = create_list_dict(FIELDNAMES, temp_list, debts)
+        new_debts.append(new_debt)
 
         print(f"\nYour debt {debt_name.title()} has been added successfully.\nDo you want to add another debt? ", end="")
         choice = get_choice()
         if choice == 'y':
             print("")
             continue
-
+        
+        write_history(new_debts, old_user)
         break
     return debts
 
@@ -104,5 +108,14 @@ def ask_debt_name_for_interest(debts: list):
     for debt in debts:
         if debt["debt_name"] == debts_names[choice - 1].lower():
             interest_rate = debt["interest_rate"]
+            break
 
     print(f"\nThe interes rate of {debts_names[choice - 1]} is {interest_rate}%")
+
+def ask_users_name() -> str:
+    user_name = input(f"Please enter your name (default '{DEFAULT_USER_NAME}'): ").lower()
+
+    if user_name.strip() == "":
+        user_name = DEFAULT_USER_NAME
+
+    return user_name

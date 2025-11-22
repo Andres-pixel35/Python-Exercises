@@ -5,6 +5,8 @@ MAX_DEBTS = 50
 FILENAME = "debt_records.csv" #this must be a csv file, otherwise the program won't work
 FILENAME_PATH = "./data" + "/" + FILENAME # make sure you know what you are doing when changing relative paths
 BASE_PATH = "." # here the same
+HISTORY_FILENAME = "debts_history.csv"
+HISTORY_PATH = "./data" + "/" + HISTORY_FILENAME
 # END
 
 # If the user decide to not enter a name, then '二百五' will be their name.
