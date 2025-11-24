@@ -1,4 +1,4 @@
-from config import OPTIONS_OLD_USER, OPTIONS_NEW_USER, OPTIONS_INTEREST_RATE
+from config import OPTIONS_OLD_USER, OPTIONS_NEW_USER, OPTIONS_VIEW
 from helpers import files_helpers, user_input, debts_functions, generalities
 
 def main():
@@ -65,39 +65,39 @@ def main():
                 case 1:
                     debts = user_input.get_debts(user_name, debts, old_user)
 
-                    print("\nDo you want to continue? ", end="")
-                    choice = user_input.get_choice()
-                    if choice == 'n':
-                        files_helpers.update_records(debts)
-                        print("Thank you for using my program.\nClosing.")
+                    if not user_input.ask_continue(debts):
                         break
                     continue
 
                 case 2:
                     print("\nHere you can choose to either view the interest rate of all your debts or choose one specifically. What do you want to do?")
-                    choice = user_input.get_choice_2(OPTIONS_INTEREST_RATE)
+                    choice = user_input.get_choice_2(OPTIONS_VIEW)
                     match choice:
                         case 1:
-                            generalities.show_interest_rate(debts)
-
-                            print("\nDo you want to do something else? ", end="")
-                            choice = user_input.get_choice()
-                            if choice == 'n':
-                                files_helpers.update_records(debts)
-                                print("Thank you for using my program.\nClosing.")
-                                break
-                            continue
+                            generalities.show_interest_rate_loop(debts)
 
                         case 2:
-                            user_input.ask_debt_name_for_interest(debts)
+                            debt = user_input.ask_debt_name(debts, "interest rate")
+                            print(f"\nThe insterest rate of {debt["debt_name"].title()} is {debt["interest_rate"]}%")
 
-                            print("\nDo you want to do something else? ", end="")
-                            choice = user_input.get_choice()
-                            if choice == 'n':
-                                files_helpers.update_records(debts)
-                                print("Thank you for using my program.\nClosing.")
-                                break
-                            continue
+                    if not user_input.ask_continue(debts):
+                        break
+                    continue
+
+                case 3:
+                    print("\nHere you can choose to either view the remaining amount of all your debts or choose one specifically. What do you want to do?")
+                    choice = user_input.get_choice_2(OPTIONS_VIEW)
+                    match choice:
+                        case 1:
+                            [generalities.show_remaining_amount(debt) for debt in debts]
+
+                        case 2:
+                            debt = user_input.ask_debt_name(debts, "remaining amount")
+                            generalities.show_remaining_amount(debt)
+
+                    if not user_input.ask_continue(debts):
+                        break
+                    continue
             break
 
 

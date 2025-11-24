@@ -5,7 +5,7 @@ from helpers.generalities import calculate_months
 
 
 #using numpy_financial i can get the monthly interes rate
-def get_interest_rate(monthly_payment: float, total_amount: float, instalments: int) -> float:
+def calculate_interest_rate(monthly_payment: float, total_amount: float, instalments: int) -> float:
     rate = npf.rate(instalments, -monthly_payment, total_amount, 0)
     rate = float(rate)
     return round(rate * 100, 2)
@@ -38,7 +38,7 @@ def check_debt(monthly_payment: float, total_amount: float, instalments: int, st
     return True
 
 # it calculates the remaining amount of the debt each time the program is execute.
-def get_remaining_amount(monthly_payment: float, instalments: int, start_date: date) -> float:
+def calculate_remaining_amount(monthly_payment: float, instalments: int, start_date: date) -> float:
     current_date = date.today() 
     real_total_amount = monthly_payment * instalments
 
@@ -65,7 +65,7 @@ def update_debt(debts: list) -> list:
         monthly_payment = float(debt["monthly_payment"])
         instalments = int(debt["instalments"])
 
-        remaining_amount = get_remaining_amount(monthly_payment, instalments, start_date)
+        remaining_amount = calculate_remaining_amount(monthly_payment, instalments, start_date)
 
         if remaining_amount > 0:
             debt["remaining_amount"] = remaining_amount
@@ -75,4 +75,23 @@ def update_debt(debts: list) -> list:
             print(f"Congratulations for paying off your debt {name.title()}\n")
 
     return updated_list
+
+# Return remaining principal and total future interest
+def calculate_remaining_balance(monthly_payment: float, monthly_rate: float, months_left: int) -> dict:
+    r = monthly_rate
+    a = monthly_payment
+    n = months_left
+
+    if r == 0:
+        principal = round(a * n, 2)
+        future_interest = 0.0
+    else:
+        principal = round(a * (1 - (1 + r)**(-n)) / r, 2)
+        future_interest = round(a * n - principal, 2)
+
+
+    return {
+        "principal": principal,
+        "interest": future_interest,
+    }
 

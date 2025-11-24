@@ -1,9 +1,9 @@
 from config import MAX_DEBTS, FIELDNAMES, DEFAULT_USER_NAME
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from helpers.debts_functions import get_interest_rate, get_remaining_amount, check_debt 
+from helpers.debts_functions import calculate_interest_rate, calculate_remaining_amount, check_debt 
 from helpers.generalities import create_list_dict, check_name_debt
-from helpers.files_helpers import write_history
+from helpers.files_helpers import write_history, update_records
 
 # to check out that when the user is asked to enter 'y/n', they actually do that
 def get_choice() -> str:
@@ -56,9 +56,9 @@ def get_debts(user_name: str, debts: list, old_user: bool) -> list:
             except ValueError:
                 print("An error occurred with the data you entered. Please check and try again.\n")
 
-        interest_rate = get_interest_rate(payment_monthly, total_amount, instalments)
+        interest_rate = calculate_interest_rate(payment_monthly, total_amount, instalments)
 
-        remaining_amount = get_remaining_amount(payment_monthly, instalments, start_date)
+        remaining_amount = calculate_remaining_amount(payment_monthly, instalments, start_date)
 
         start_date = start_date.strftime("%Y/%m/%d")
         deadline = deadline.strftime("%Y/%m/%d")
@@ -97,20 +97,19 @@ def get_choice_2(options: list,) -> int:
             print(f"You must choose a number betwen 1 and {length}. Please try again.\n")
             continue
 
-def ask_debt_name_for_interest(debts: list):
+def ask_debt_name(debts: list, param: str) -> dict:
+    tmp_dict = {}
     debts_names = [debt["debt_name"].title() for debt in debts]
 
-    print("\nPlease choose the debt whose interest rate you want to know ")
+    print(f"\nPlease choose the debt whose {param} you want to know ")
 
     choice = get_choice_2(debts_names)
 
-    interest_rate = 0
     for debt in debts:
         if debt["debt_name"] == debts_names[choice - 1].lower():
-            interest_rate = debt["interest_rate"]
-            break
+            tmp_dict = debt.copy()
 
-    print(f"\nThe interes rate of {debts_names[choice - 1]} is {interest_rate}%")
+    return tmp_dict
 
 def ask_users_name() -> str:
     user_name = input(f"Please enter your name (default '{DEFAULT_USER_NAME}'): ").lower()
@@ -119,3 +118,13 @@ def ask_users_name() -> str:
         user_name = DEFAULT_USER_NAME
 
     return user_name
+
+def ask_continue(debts):
+    print("\nDo you want to do something else? ", end="")
+    choice = get_choice()
+    if choice == 'n':
+        update_records(debts)
+        print("Thank you for using my program.\nClosing.")
+        return False
+    return True
+

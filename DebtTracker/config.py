@@ -16,4 +16,4 @@ FIELDNAMES = ["user_name", "debt_name", "start_date", "deadline", "monthly_payme
 
 OPTIONS_OLD_USER = ["Add a new debt", "View interest rate", "View the remaining balance", "Adjust monthly payment", "Pay off now", "Exit"]
 OPTIONS_NEW_USER = ["Continue", "Exit"]
-OPTIONS_INTEREST_RATE = ["View all", "Choose one"]
+OPTIONS_VIEW = ["View all", "Choose one"]
