@@ -8,7 +8,7 @@ def main():
     if not old_user:
         print(
             "=== Welcome to your personal debt tracker! ===\n\nHere, you can not only record your debts but also automatically view their interest rates,"
-            " see how much you could save by paying them off now, and how much you could save by increasing your monthly payments.\nMoreover,"
+            " see how much you could save by paying them off now, and simulate how much you could save by increasing your monthly payments.\nMoreover,"
             " your information will be automatically updated each time you run this programme.\n"
         )
 
@@ -89,20 +89,38 @@ def main():
                     choice = user_input.get_choice_2(OPTIONS_VIEW)
                     match choice:
                         case 1:
-                            [generalities.show_remaining_amount(debt) for debt in debts]
-
+                            for debt in debts:
+                                balance = generalities.calculate_balance(debt)
+                                print(f"{debt["debt_name"].title()}: "
+                                    f"You still owe {balance["principal"]} of the loan balance, and you will pay {balance["interest"]} "
+                                    "in interest over the remaining months.")
                         case 2:
                             debt = user_input.ask_debt_name(debts, "remaining amount")
-                            generalities.show_remaining_amount(debt)
+                            balance = generalities.calculate_balance(debt)
+                            print(f"{debt["debt_name"].title()}: "
+                                f"You still owe {balance["principal"]} of the loan balance, and you will pay {balance["interest"]} "
+                                "in interest over the remaining months.")
 
                     if not user_input.ask_continue(debts):
                         break
                     continue
+
+                case 4:
+                    print("\nHere you can simulate how much could you save if you were to increase your monthly payments.")
+                    debt = user_input.ask_debt_name(debts, "payments")
+                    generalities.show_change_payments(debt)
+
+                    if not user_input.ask_continue(debts):
+                        break
+                    continue
+                
+                case 5:
+                    print("\nHere you can pay off any debt now and see how much you could save by doing that")
+                    # principal + insterest up to the day of the pay off + (conditional) early-payment fee
+
             break
 
 
 
 if __name__ == "__main__":
     main()
-
-
