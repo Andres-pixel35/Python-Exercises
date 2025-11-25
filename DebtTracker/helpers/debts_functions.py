@@ -95,3 +95,62 @@ def calculate_remaining_balance(monthly_payment: float, monthly_rate: float, mon
         "interest": future_interest,
     }
 
+def compare_payments(monthly_rate: float, principal: float, old_payment: float):
+    while True:
+        new_payment = 0
+        try:
+            new_payment = float(input("Please enter the amount of the new payment: "))
+            if new_payment < 0:
+                raise ValueError
+            elif new_payment < old_payment:
+                print(f"The new payment must be higher than the previous ({old_payment}). Please try again.\n")
+                continue
+        except ValueError:
+            print(f"You must enter a positive float, but you entered: {new_payment}. Please try again.\n")
+            continue
+
+        def simulate(payment):
+            last_payment = 0
+            bal = principal
+            months = 0
+            interest_sum = 0.0
+
+            while True:
+                if bal <= 0:
+                    return months, interest_sum, last_payment
+
+                i = bal * monthly_rate
+                c = payment - i
+
+                if c <= 0:
+                    print("Payment too small to cover even the monthly interest. Please try again.\n")
+                    return None
+
+                if c > bal:
+                    # this is the final payment
+                    last_payment = i + bal
+                    bal = 0
+                    interest_sum += i
+                    months += 1
+                    continue
+
+                last_payment = payment
+                bal -= c
+                interest_sum += i
+                months += 1
+
+        result_old = simulate(old_payment)
+        result_new = simulate(new_payment)
+
+        if result_old is None or result_new is None:
+            continue
+
+        old_months, old_interest, old_last_payment = result_old
+        new_months, new_interest, new_last_payment = result_new
+
+        print(f"\nOld finish: {old_months} months, interest £{old_interest:.2f}, last payment £{old_last_payment:.2f}")
+        print(f"New finish: {new_months} months, interest £{new_interest:.2f}, last payment £{new_last_payment:.2f}")
+        print(f"Months saved: {old_months - new_months}")
+        print(f"Money saved: £{old_interest - new_interest:.2f}")
+
+        break

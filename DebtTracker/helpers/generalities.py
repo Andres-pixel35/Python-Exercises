@@ -34,18 +34,23 @@ def show_interest_rate_loop(debts: list):
     for debt in debts:
         print(f"{debt["debt_name"].title()}: {debt["interest_rate"]}%")
 
-def show_remaining_amount(debt: dict):
+def calculate_balance(debt: dict):
     start_date = datetime.strptime(debt["start_date"], "%Y/%m/%d").date()
     months = calculate_months(start_date)
     months_left = int(debt["instalments"]) - months
     monthly_payment = float(debt["monthly_payment"])
     insterest_rate = round(float(debt["interest_rate"]) / 100, 2)
 
-    remaining_amount = hd.calculate_remaining_balance(monthly_payment, insterest_rate, months_left)
+    return hd.calculate_remaining_balance(monthly_payment, insterest_rate, months_left)
 
-    print(f"{debt["debt_name"].title()}: "
-          f"You still owe {remaining_amount["principal"]} of the loan balance, and you will pay {remaining_amount["interest"]} in interest over the remaining months.")
 
+def show_change_payments(debt: dict):
+    monthly_payment = float(debt["monthly_payment"])
+    insterest_rate = round(float(debt["interest_rate"]) / 100, 2)
+
+    balance = calculate_balance(debt)
+
+    hd.compare_payments(insterest_rate, balance["principal"], monthly_payment)
 
 
 
