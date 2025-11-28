@@ -2,13 +2,14 @@ import numpy_financial as npf
 from datetime import date, datetime
 import helpers.user_input as hu
 from helpers.generalities import calculate_months
+from config import DAYS_IN_YEAR
 
-
-#using numpy_financial i can get the monthly interes rate
-def calculate_interest_rate(monthly_payment: float, total_amount: float, instalments: int) -> float:
-    rate = npf.rate(instalments, -monthly_payment, total_amount, 0)
+def calculate_interest_rate(monthly_payment: float, principal: float, instalments: int) -> float:
+    rate = npf.rate(instalments, -monthly_payment, principal, 0)
     rate = float(rate)
-    return round(rate * 100, 2)
+    if abs(rate) < 1e-8:
+        return 0.0
+    return rate 
 
 # it will make sure that the data entered is likely to be a real debt and that the user did not make any huge mistake entering the data
 def check_debt(monthly_payment: float, total_amount: float, instalments: int, start_date: date) -> bool:
@@ -39,7 +40,7 @@ def check_debt(monthly_payment: float, total_amount: float, instalments: int, st
 
 # it calculates the remaining amount of the debt each time the program is execute.
 def calculate_remaining_amount(monthly_payment: float, instalments: int, start_date: date) -> float:
-    current_date = date.today() 
+    current_date = date.today()
     real_total_amount = monthly_payment * instalments
 
     if (start_date.year, start_date.month) == (current_date.year, current_date.month):
@@ -56,7 +57,7 @@ def calculate_remaining_amount(monthly_payment: float, instalments: int, start_d
 
     new_remaining_amount = real_total_amount - debt_paid_by_now
 
-    return new_remaining_amount
+    return round(new_remaining_amount,2)
 
 def update_debt(debts: list) -> list:
     updated_list = []
@@ -83,12 +84,16 @@ def calculate_remaining_balance(monthly_payment: float, monthly_rate: float, mon
     n = months_left
 
     if r == 0:
-        principal = round(a * n, 2)
+        principal = a * n
         future_interest = 0.0
-    else:
-        principal = round(a * (1 - (1 + r)**(-n)) / r, 2)
-        future_interest = round(a * n - principal, 2)
 
+    else:
+        principal = npf.pv(r, n, -a, fv=0, when="end")
+
+        principal = abs(principal)
+
+        total_remaining_payments = a * n
+        future_interest = total_remaining_payments - principal
 
     return {
         "principal": principal,
@@ -102,14 +107,14 @@ def compare_payments(monthly_rate: float, principal: float, old_payment: float):
             new_payment = float(input("Please enter the amount of the new payment: "))
             if new_payment < 0:
                 raise ValueError
-            elif new_payment < old_payment:
+            elif new_payment <= old_payment:
                 print(f"The new payment must be higher than the previous ({old_payment}). Please try again.\n")
                 continue
         except ValueError:
             print(f"You must enter a positive float, but you entered: {new_payment}. Please try again.\n")
             continue
 
-        def simulate(payment):
+        def simulate(payment: float, is_new_payment: bool):
             last_payment = 0
             bal = principal
             months = 0
@@ -131,16 +136,18 @@ def compare_payments(monthly_rate: float, principal: float, old_payment: float):
                     last_payment = i + bal
                     bal = 0
                     interest_sum += i
-                    months += 1
-                    continue
+                    if is_new_payment:
+                        months += 1
+                        continue
+                    continue 
 
                 last_payment = payment
                 bal -= c
                 interest_sum += i
                 months += 1
 
-        result_old = simulate(old_payment)
-        result_new = simulate(new_payment)
+        result_old = simulate(old_payment, False)
+        result_new = simulate(new_payment, True)
 
         if result_old is None or result_new is None:
             continue
@@ -148,9 +155,25 @@ def compare_payments(monthly_rate: float, principal: float, old_payment: float):
         old_months, old_interest, old_last_payment = result_old
         new_months, new_interest, new_last_payment = result_new
 
-        print(f"\nOld finish: {old_months} months, interest £{old_interest:.2f}, last payment £{old_last_payment:.2f}")
-        print(f"New finish: {new_months} months, interest £{new_interest:.2f}, last payment £{new_last_payment:.2f}")
+        print(f"\nOld finish: {old_months} months, interest ${old_interest:.2f}, last payment ${old_last_payment:.2f}")
+        print(f"New finish: {new_months} months, interest ${new_interest:.2f}, last payment ${new_last_payment:.2f}")
         print(f"Months saved: {old_months - new_months}")
-        print(f"Money saved: £{old_interest - new_interest:.2f}")
+        print(f"Money saved: ${old_interest - new_interest:.2f}")
 
         break
+
+def calculate_interim_payoff(remaining_principal: float, monthly_rate: float, days_since_last_payment: int, prepayment_fine: float) -> float:
+    if days_since_last_payment == 0:
+        accrued_interest = 0.0
+    else:
+        monthly_rate_decimal = monthly_rate 
+
+        nominal_annual_rate = monthly_rate_decimal * 12
+        
+        daily_rate_decimal = nominal_annual_rate / DAYS_IN_YEAR
+
+        accrued_interest = remaining_principal * daily_rate_decimal * days_since_last_payment
+
+    total_payoff_amount = round(remaining_principal + accrued_interest + prepayment_fine, 2)
+
+    return total_payoff_amount

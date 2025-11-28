@@ -6,6 +6,7 @@ def main():
     old_user = files_helpers.file_exists()
 
     if not old_user:
+        print("=== PLEASE READ THE README FILE BEFORE EXECUTING THIS PROGRAM ===\n")
         print(
             "=== Welcome to your personal debt tracker! ===\n\nHere, you can not only record your debts but also automatically view their interest rates,"
             " see how much you could save by paying them off now, and simulate how much you could save by increasing your monthly payments.\nMoreover,"
@@ -46,6 +47,7 @@ def main():
         print(f"Welcome back, {user_name.title()}.")
 
         debts = debts_functions.update_debt(debts)
+        files_helpers.update_records(debts)
         
         if len(debts) == 0:
             print(f"\nCongratulations, {user_name.title()}. You have paid off all your previous debts.\n\n"
@@ -54,7 +56,6 @@ def main():
             if choice == 'y':
                 debts = user_input.get_debts(user_name, debts, old_user)
             else:
-                files_helpers.update_records(debts)
                 print("Closing.")
                 return 0
 
@@ -78,7 +79,8 @@ def main():
 
                         case 2:
                             debt = user_input.ask_debt_name(debts, "interest rate")
-                            print(f"\nThe insterest rate of {debt["debt_name"].title()} is {debt["interest_rate"]}%")
+                            rate = round(float(debt["interest_rate"]) * 100, 2)
+                            print(f"\nThe insterest rate of {debt["debt_name"].title()} is {rate}%")
 
                     if not user_input.ask_continue(debts):
                         break
@@ -87,18 +89,19 @@ def main():
                 case 3:
                     print("\nHere you can choose to either view the remaining amount of all your debts or choose one specifically. What do you want to do?")
                     choice = user_input.get_choice_2(OPTIONS_VIEW)
+                    print("")
                     match choice:
                         case 1:
                             for debt in debts:
                                 balance = generalities.calculate_balance(debt)
                                 print(f"{debt["debt_name"].title()}: "
-                                    f"You still owe {balance["principal"]} of the loan balance, and you will pay {balance["interest"]} "
+                                    f"You still owe ${round(balance["principal"], 2)} of the loan balance, and you will pay ${round(balance["interest"], 2)} "
                                     "in interest over the remaining months.")
                         case 2:
-                            debt = user_input.ask_debt_name(debts, "remaining amount")
+                            debt = user_input.ask_debt_name(debts, "principal remaining")
                             balance = generalities.calculate_balance(debt)
                             print(f"{debt["debt_name"].title()}: "
-                                f"You still owe {balance["principal"]} of the loan balance, and you will pay {balance["interest"]} "
+                                f"You still owe ${round(balance["principal"], 2)} of the loan balance, and you will pay ${round(balance["interest"], 2)} "
                                 "in interest over the remaining months.")
 
                     if not user_input.ask_continue(debts):
@@ -116,11 +119,45 @@ def main():
                 
                 case 5:
                     print("\nHere you can pay off any debt now and see how much you could save by doing that")
-                    # principal + insterest up to the day of the pay off + (conditional) early-payment fee
+                    debt = user_input.ask_debt_name(debts, "principal remaining")  
 
+                    principal = generalities.calculate_balance(debt)
+                    monthly_rate = float(debt["interest_rate"])
+                    days, fine_amount = user_input.get_days_fine(principal["principal"])
+
+                    payoff = debts_functions.calculate_interim_payoff(principal["principal"], monthly_rate, days, fine_amount)
+
+                    money_saved = round(float(debt["remaining_amount"]) - payoff, 2)
+
+                    print(f"\nIn order to pay off {debt["debt_name"].title()} you need ${payoff}."
+                          f" If you pay off your debt today you can save ${money_saved}. \nDo you want to pay off your debt? ", end="")
+                    choice = user_input.get_choice()
+                    if choice == 'y':
+                        debts.remove(debt)
+                        if debts:
+                            if not user_input.ask_continue(debts):
+                                break
+                            continue
+                        else:
+                            print("\nRight know you don't have any debt recorded. Do you want to add one?", end="")
+                            choice2 = user_input.get_choice()
+                            if choice2 == 'n':
+                                files_helpers.update_records(debts)
+                                print("Thank you for using my program.\nCosing")
+                                break
+                            else:
+                                debts = user_input.get_debts(user_name, debts, old_user)
+                                continue
+                    else:
+                        if not user_input.ask_continue(debts):
+                            break
+                        continue
+                
+                case 6:
+                    files_helpers.update_records(debts)
+                    print("\nThank you for using my program.\nClosing")
+                    break
             break
-
-
 
 if __name__ == "__main__":
     main()
