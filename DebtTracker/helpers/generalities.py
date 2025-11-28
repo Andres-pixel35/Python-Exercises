@@ -8,7 +8,6 @@ def calculate_months(start_date: date) -> int:
         return 0
     else:
         months = (current_date.year - start_date.year) * 12 + (current_date.month - start_date.month)
-        months = months + 1 # since my program counts the start_date as the first instalment, i need to make this change here to ensure all the payments are count
 
         if current_date.day < start_date.day:
             months = months - 1
@@ -30,23 +29,24 @@ def create_list_dict(keys: list, values: list, debts: list) -> dict:
     return temp_dict
 
 def show_interest_rate_loop(debts: list):
-    print("\nDebt name: insterest rate")
+    print("\nDebt name: interest rate")
     for debt in debts:
-        print(f"{debt["debt_name"].title()}: {debt["interest_rate"]}%")
+        rate = round(float(debt["interest_rate"]) * 100, 2)
+        print(f"{debt["debt_name"].title()}: {rate}%")
 
-def calculate_balance(debt: dict):
+def calculate_balance(debt: dict) -> dict:
     start_date = datetime.strptime(debt["start_date"], "%Y/%m/%d").date()
     months = calculate_months(start_date)
     months_left = int(debt["instalments"]) - months
     monthly_payment = float(debt["monthly_payment"])
-    insterest_rate = round(float(debt["interest_rate"]) / 100, 2)
+    insterest_rate = float(debt["interest_rate"]) 
 
     return hd.calculate_remaining_balance(monthly_payment, insterest_rate, months_left)
 
 
 def show_change_payments(debt: dict):
     monthly_payment = float(debt["monthly_payment"])
-    insterest_rate = round(float(debt["interest_rate"]) / 100, 2)
+    insterest_rate = float(debt["interest_rate"]) 
 
     balance = calculate_balance(debt)
 

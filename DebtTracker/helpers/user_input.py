@@ -40,15 +40,20 @@ def get_debts(user_name: str, debts: list, old_user: bool) -> list:
                 start_date = datetime.strptime(input("Enter the start date (YYYY/MM/DD): "), "%Y/%m/%d").date()
                 instalments = int(input("Please enter the number of your instalments: "))
                 payment_monthly = float(input("Please enter the amount of money due monthly: "))
-                total_amount = float(input("Please enter the original amount borrowed: "))
+                principal = float(input("Please enter the principal: "))
 
-                if payment_monthly < 1 or total_amount < 1 or instalments < 1:
+                if payment_monthly < 1 or principal < 1 or instalments < 1:
                     print("You must enter a positive number greater than 0. Please try again.\n")
                     continue
 
-                if not check_debt(payment_monthly, total_amount, instalments, start_date):
+                if not check_debt(payment_monthly, principal, instalments, start_date):
                     print("")
                     continue
+
+                interest_rate = calculate_interest_rate(payment_monthly, principal, instalments)
+                if interest_rate < 0:
+                    print("The insterest rate cannot be negative.")
+                    raise ValueError
 
                 deadline = start_date + relativedelta(months=instalments)
 
@@ -56,14 +61,12 @@ def get_debts(user_name: str, debts: list, old_user: bool) -> list:
             except ValueError:
                 print("An error occurred with the data you entered. Please check and try again.\n")
 
-        interest_rate = calculate_interest_rate(payment_monthly, total_amount, instalments)
-
         remaining_amount = calculate_remaining_amount(payment_monthly, instalments, start_date)
 
         start_date = start_date.strftime("%Y/%m/%d")
         deadline = deadline.strftime("%Y/%m/%d")
 
-        temp_list = [user_name, debt_name, start_date, deadline, payment_monthly, instalments, total_amount, remaining_amount, interest_rate]
+        temp_list = [user_name, debt_name, start_date, deadline, payment_monthly, instalments, principal, remaining_amount, interest_rate]
 
         new_debt = create_list_dict(FIELDNAMES, temp_list, debts)
         new_debts.append(new_debt)
@@ -127,4 +130,39 @@ def ask_continue(debts):
         print("Thank you for using my program.\nClosing.")
         return False
     return True
+
+def get_days_fine(remaining_principal: float) -> tuple:
+    days = 0
+    fine_percent = 0
+    fine_amount = 0
+
+    while True:
+        try:
+            days = int(input("\nPlease enter the amount of days that have passed since your last installment: "))
+            if days < 0 or days > 29:
+                raise ValueError
+            break
+        except ValueError:
+            print("You must enter an integer greater than 0 and smaller than 30. Please try again.")
+
+    while True:
+        print("Is there a prepayment penalty on this loan? ", end="")
+        choice = get_choice()
+        if choice == 'n':
+            break
+
+        try:
+            fine_percent = float(input("Please enter the percentage of that penalty (e.g: 5% = 5.0): "))
+            if fine_percent < 0:
+                raise ValueError
+            break
+        except ValueError:
+            print("You must enter a positive floating point. Plese try again.")
+
+    fine_percent = fine_percent / 100
+    fine_amount = remaining_principal * fine_percent
+
+    return days, fine_amount
+
+
 
