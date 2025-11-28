@@ -52,7 +52,7 @@ def get_debts(user_name: str, debts: list, old_user: bool) -> list:
 
                 interest_rate = calculate_interest_rate(payment_monthly, principal, instalments)
                 if interest_rate < 0:
-                    print("The insterest rate cannot be negative.")
+                    print("The interest rate cannot be negative.")
                     raise ValueError
 
                 deadline = start_date + relativedelta(months=instalments)
